@@ -72,7 +72,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
           </div>
         </div>
         <DropdownMenuSeparator className="my-2" />
-        {user.role !== "admin" &&(
+        {user.role !== "ADMIN" &&(
           <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/profile" className="flex items-center gap-3 px-2 py-2 rounded-md">
             <UserIcon className="w-4 h-4 text-muted-foreground" />
@@ -81,7 +81,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
         </DropdownMenuItem>
         )}
         
-        {user.role === "admin" && <AdminItem />}
+        {user.role === "ADMIN" && <AdminItem />}
         <DropdownMenuSeparator className="my-2" />
         <SignOutItem />
       </DropdownMenuContent>

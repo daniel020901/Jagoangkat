@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 
 import { getServerSession } from "../lib/get-session";
-import { ShoppingCart } from "lucide-react";
+import  ShoppingCartIcon  from "./ShoppingCartIcon";
 
 import { ModeToggle } from "./mode-toggle";
 import {UserDropdown} from "./user-dropdown";
@@ -16,13 +16,12 @@ export default async function Header() {
     <header className="sticky top-0 z-20 w-full border-b bg-background backdrop-blur supports-backdrop-filter:bg-background">
       <div className="w-full px-4 sm:px-8">
         <div className="flex h-16 items-center justify-between space-x-4 md:space-x-8 lg:space-x-12">
-          <Link href="/" className="flex items-center justify-center">
+          <Link href="/" className="relative h-10 w-32 md:w-40">
             <Image
               src="/jagoangkat.png"
               alt="Jago Angkat Logo"
-              width={150}
-            height={50}
-            className="border-muted object-contain w-auto h-auto"
+              fill
+            className="border-muted object-contain "
               
             />
           </Link>
@@ -61,7 +60,7 @@ export default async function Header() {
               className="relative"
               aria-label="Shopping Cart"
             >
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingCartIcon  />
             </Button>
 
             <ModeToggle />

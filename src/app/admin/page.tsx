@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { getServerSession } from "@/lib/get-session";
 import { forbidden, unauthorized } from "next/navigation";
+import Overview from "./overview/page";
 
 export const metadata: Metadata = {
-  title: "Admin",
+  title: "ADMIN",
 };
 
 export default async function AdminPage() {
@@ -12,18 +13,9 @@ export default async function AdminPage() {
 
   if(!user) unauthorized()
 
-  if(user.role !== "admin") forbidden()
+  if(user.role !== "ADMIN") forbidden()
   
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-12">
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold">Admin</h1>
-          <p className="text-muted-foreground">
-            You have administrator access.
-          </p>
-        </div>
-      </div>
-    </main>
+    <Overview/>
   );
 }

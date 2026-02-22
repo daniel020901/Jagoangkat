@@ -1,0 +1,61 @@
+{
+    "sidebarItems": [
+        { "name": "Dashboard", "href": "/admin", "icon": "House"},
+        { "name": "Revenue", "href": "/admin/sales", "icon": "DollarSign"},
+        { "name": "Products", "href": "/admin/products", "icon": "ShoppingBag"},
+        { "name": "Orders", "href": "/admin/orders", "icon": "ShoppingCart"},
+        { "name": "Pengaturan", "href": "/admin/settings", "icon": "Settings"},
+        { "name": "User", "href": "/admin/users", "icon": "Users"}
+    ],
+    "sales": [
+    { "name": "Jan", "sales": 4000 },
+    { "name": "Feb", "sales": 3000 },
+    { "name": "Mar", "sales": 5000 },
+    { "name": "Apr", "sales": 4500 },
+    { "name": "May", "sales": 6000 },
+    { "name": "Jun", "sales": 5500 },
+    { "name": "Jul", "sales": 7000 },
+    { "name": "Aug", "sales": 7500 },
+    { "name": "Sep", "sales": 8200 },
+    { "name": "Oct", "sales": 9000 },
+    { "name": "Nov", "sales": 11000 },
+    { "name": "Dec", "sales": 15000 }
+  ],
+  "categories": [
+    { "name": "Webbing Sling", "value": 5200, "color": "#6366F1" },
+    { "name": "Ratchet Lashing", "value": 4100, "color": "#8B5CF6" },
+    { "name": "Round Sling", "value": 3200, "color": "#EC4899" },
+    { "name": "Sling Cover", "value": 2100, "color": "#10B981" },
+    { "name": "Safety Belt/Harness", "value": 2800, "color": "#F59E0B" }
+  ],
+  "orderStatus": [
+    { "name": "Success", "value": 120, "color": "#10B981" },
+    { "name": "Cancelled", "value": 15, "color": "#EF4444" },
+    { "name": "Delivered", "value": 45, "color": "#3B82F6" },
+    { "name": "Processing", "value": 20, "color": "#10B981" }
+  ],
+  "productPerformance": [
+    { "name": "Webbing Sling 1T", "sales": 1200, "revenue": 45000000 },
+    { "name": "Webbing Sling 2T", "sales": 950, "revenue": 52000000 },
+    { "name": "Webbing Sling 3T", "sales": 800, "revenue": 64000000 },
+    { "name": "Webbing Sling 5T", "sales": 450, "revenue": 48000000 },
+    { "name": "Round Sling 2T", "sales": 1100, "revenue": 55000000 },
+    { "name": "Round Sling 5T", "sales": 750, "revenue": 60000000 },
+    { "name": "Ratchet Lashing 2\"", "sales": 1500, "revenue": 37500000 },
+    { "name": "Ratchet Lashing 1\"", "sales": 2000, "revenue": 30000000 },
+    { "name": "Wire Rope 10mm", "sales": 300, "revenue": 21000000 },
+    { "name": "Wire Rope 12mm", "sales": 250, "revenue": 22500000 },
+    { "name": "Shackle G209 1T", "sales": 500, "revenue": 10000000 },
+    { "name": "Shackle G209 2T", "sales": 400, "revenue": 12000000 },
+    { "name": "Thimble 10mm", "sales": 1000, "revenue": 5000000 },
+    { "name": "Master Link 10T", "sales": 150, "revenue": 18000000 },
+    { "name": "Sling Cover 2M", "sales": 600, "revenue": 12000000 },
+    { "name": "Cargo Net 3x3", "sales": 100, "revenue": 15000000 },
+    { "name": "Lever Block 1.5T", "sales": 80, "revenue": 24000000 },
+    { "name": "Chain Block 2T", "sales": 70, "revenue": 28000000 },
+    { "name": "Safety Harness Full", "sales": 400, "revenue": 44000000 },
+    { "name": "Body Harness Single", "sales": 350, "revenue": 31500000 }
+  ]
+}
+
+  
