@@ -1,45 +1,93 @@
 // src/components/ProductList.tsx
 
 import { ProductsType, ProductType } from "@/types";
-import Categories from "./Categories";
+// import Categories from "./Categories";
 import ProductCard from "./ProductCard";
 import Link from "next/link";
 import Filter from "./Filter";
-import { getProductsData } from "@/lib/product-service";
+import { getProductsData } from "@/lib/product-server";
+import { PaginationWithLinks } from "./ui/pagination-with-links";
+import Categories from "./Categories";
 
 
 
-const ProductList = async ({ 
-  params 
-}: { 
-  category: string; 
+interface ProductListProps {
+ category: string; 
   params: "homepage" | "products"; 
-}) => {
-  const products = await getProductsData();
+  page?:number;
+  pageSize?: number;
+  sort?: string;
+  
+}
+const ProductList = async ({ 
+  category,
+  params,
+  page =1 , 
+  pageSize = 12,
+  sort = "newest"
+ 
+}: ProductListProps) => {
+  
+  const {products, totalCount} = await getProductsData(false, page, pageSize, sort);
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-3">
-      <Categories />
-      {params === "products" && <Filter />}
+  <div className="w-full max-w-6xl mx-auto px-3 py-10">
+  {/* Header Section: Filter & Categories */}
+  <div className="flex items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800">
+    
+    <div className="flex items-center gap-4 flex-1 min-w-0">
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-12">
-        {products.length > 0 ? (
-          products.map((product: ProductType) => (
-            <ProductCard key={product.id} product={product} />
-          ))
-        ) : (
-          <p className="col-span-full text-center text-gray-500">
-            No products found.
-          </p>
-        )}
+      {/* 1. Filter Button (Tombol Hitam) */}
+      {params === "products" && (
+        <div className="flex-shrink-0 flex items-center">
+          <Filter />
+        </div>
+      )}
+      
+      <div className="flex-1  no-scrollbar flex items-center">
+        <div className="flex flex-nowrap items-center h-full">
+           <Categories />
+        </div>
       </div>
-      
-      <Link href="/products" 
-        className="flex justify-end mt-4 underline text-gray-500"
-      >
-        View All Product
-      </Link>
     </div>
+
+    <div className="hidden lg:block text-sm text-gray-400">
+      Total: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalCount}</span> Products
+    </div>
+  </div>
+
+  {/* Product Grid */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-8 gap-y-12">
+    {products.length > 0 ? (
+      products.map((product: ProductType) => (
+        <ProductCard key={product.id} product={product} />
+      ))
+    ) : (
+      <div className="col-span-full py-20">
+        <div className="flex flex-col items-center justify-center gap-3">
+          <div className="w-16 h-16 bg-gray-50 dark:bg-gray-900 rounded-full flex items-center justify-center">
+             <span className="text-2xl">📦</span>
+          </div>
+          <p className="text-center text-gray-500 dark:text-gray-400 font-medium">
+            No products found in this category.
+          </p>
+        </div>
+      </div>
+    )}
+  </div>
+
+  {/* Pagination Section */}
+  <div className="mt-16 pt-10 border-t border-gray-100 dark:border-gray-800">
+    <PaginationWithLinks
+      page={page}
+      pageSize={pageSize}
+      totalCount={totalCount}
+      pageSizeSelectOptions={{
+        pageSizeOptions: [12, 20, 50],
+      }}
+    />
+  </div>
+</div>
   );
 };
 

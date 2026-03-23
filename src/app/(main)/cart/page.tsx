@@ -21,20 +21,14 @@ const CartPage = () => {
   const [shippingForm, setShippingForm] = useState<shippingFormInputs | null>(null);
 
   const activeStep = parseInt(searchParams.get("step") || "1");
-  const { cart, removeFromCart } = useCartStore();
+  const { cart, removeFromCart, getSummary, hashHydrated } = useCartStore();
 
   // Menghitung ringkasan biaya secara efisien
-  const totals = useMemo(() => {
-    const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    const discount = subtotal * 0.1; // Diskon 10%
-    const shipping = cart.length > 0 ? 10000 : 0;
-    return {
-      subtotal,
-      discount,
-      shipping,
-      total: subtotal - discount + shipping,
-    };
-  }, [cart]);
+  // Destructuring hasil perhitungan dari store
+    const { subtotal, shipping, total } = getSummary();
+
+    // Render aman untuk hidrasi Next.js
+    if (!hashHydrated) return null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-34">
@@ -133,7 +127,7 @@ const CartPage = () => {
               ) : activeStep === 2 ? (
                 <ShippingForm setShippingForm={setShippingForm} />
               ) : activeStep === 3 && shippingForm ? (
-                <PaymentForm />
+                <PaymentForm shippingForm={shippingForm} />
               ) : (
                 <div className="py-20 text-center">
                   <p className="text-sm text-gray-500 italic">Lengkapi data pengiriman untuk melanjutkan pembayaran.</p>
@@ -149,15 +143,12 @@ const CartPage = () => {
               <div className="flex flex-col gap-4">
                 <div className="flex justify-between text-sm">
                   <p className="text-gray-500">Subtotal Produk</p>
-                  <p className="font-semibold text-zinc-900 dark:text-zinc-100">Rp {totals.subtotal.toLocaleString("id-ID")}</p>
+                  <p className="font-semibold text-zinc-900 dark:text-zinc-100">Rp {subtotal.toLocaleString("id-ID")}</p>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <p className="text-gray-500">Diskon Member (10%)</p>
-                  <p className="font-semibold text-green-600">- Rp {totals.discount.toLocaleString("id-ID")}</p>
-                </div>
+                
                 <div className="flex justify-between text-sm">
                   <p className="text-gray-500">Estimasi Ongkir</p>
-                  <p className="font-semibold text-zinc-900 dark:text-zinc-100">Rp {totals.shipping.toLocaleString("id-ID")}</p>
+                  <p className="font-semibold text-zinc-900 dark:text-zinc-100">Rp {shipping.toLocaleString("id-ID")}</p>
                 </div>
                 
                 <hr className="border-gray-100 dark:border-zinc-800 my-2" />
@@ -165,7 +156,7 @@ const CartPage = () => {
                 <div className="flex justify-between items-center">
                   <p className="font-bold text-zinc-900 dark:text-zinc-100">Total Tagihan</p>
                   <p className="font-black text-xl text-orange-600">
-                    Rp {totals.total.toLocaleString("id-ID")}
+                    Rp {total.toLocaleString("id-ID")}
                   </p>
                 </div>
               </div>

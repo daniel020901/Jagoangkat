@@ -1,26 +1,40 @@
 import "dotenv/config";
 import prisma from "@/lib/prisma";
 
-
 async function main() {
   console.log("🚀 Seeding database...");
 
-  // =========================
+  // ==========================================
   // 1️⃣ CLEAN DATABASE (URUTAN PENTING)
-  // =========================
-  await prisma.payment.deleteMany({});
+  // ==========================================
+  // Hapus tabel yang bergantung pada Product & User dulu
+  
   await prisma.orderItem.deleteMany({});
+  await prisma.payment.deleteMany({});
   await prisma.order.deleteMany({});
-  await prisma.cartItem.deleteMany({});
-  await prisma.cart.deleteMany({});
-  await prisma.user.deleteMany({});
+  
+  // Hapus Product sebelum Category
   await prisma.product.deleteMany({});
+  await prisma.category.deleteMany({});
+  await prisma.user.deleteMany({});
 
   console.log("🧹 Database cleaned.");
 
-  // =========================
-  // 2️⃣ SEED PRODUCTS
-  // =========================
+  // ==========================================
+  // 2️⃣ SEED CATEGORIES
+  // ==========================================
+  const slingBelt = await prisma.category.create({ data: { name: "Sling Belt", slug: "sling-belt" } });
+  const hoist = await prisma.category.create({ data: { name: "Hoist", slug: "hoist" } });
+  const wireRope = await prisma.category.create({ data: { name: "Wire Rope", slug: "wire-rope" } });
+  const chain = await prisma.category.create({ data: { name: "Chain", slug: "chain" } });
+  const riggingHardware = await prisma.category.create({ data: { name: "Rigging Hardware", slug: "rigging-hardware" } });
+  const materialHandling = await prisma.category.create({ data: { name: "Material Handling", slug: "material-handling" } });
+
+  console.log("📂 Categories seeded.");
+
+  // ==========================================
+  // 3️⃣ SEED PRODUCTS
+  // ==========================================
   const products = [
     {
       name: "Webbing Sling 1 Ton - 2 meter",
@@ -34,6 +48,7 @@ async function main() {
       stock: 100,
       images: ["/assets/webbing-1ton.png"],
       isActive: true,
+      categoryId: slingBelt.id,
     },
     {
       name: "Webbing Sling 2 Ton - 4 meter",
@@ -47,6 +62,7 @@ async function main() {
       stock: 75,
       images: ["/assets/webbing-2ton.png"],
       isActive: true,
+      categoryId: slingBelt.id,
     },
     {
       name: "Webbing Sling 3 Ton - 6 meter",
@@ -60,6 +76,7 @@ async function main() {
       stock: 100,
       images: ["/assets/webbing-3ton.png"],
       isActive: true,
+      categoryId: slingBelt.id,
     },
     {
       name: "Webbing Sling 5 Ton - 8 meter",
@@ -73,6 +90,7 @@ async function main() {
       stock: 50,
       images: ["/assets/webbing-5ton.png"],
       isActive: true,
+      categoryId: slingBelt.id,
     },
     {
       name: "Webbing Sling 10 Ton - 10 meter",
@@ -86,6 +104,7 @@ async function main() {
       stock: 15,
       images: ["/assets/webbing-10ton.png"],
       isActive: true,
+      categoryId: slingBelt.id,
     },
     {
       name: "Round Sling 2 Ton - 3 meter",
@@ -99,6 +118,7 @@ async function main() {
       stock: 60,
       images: ["/assets/cover-roundsling2ton.png"],
       isActive: true,
+      categoryId: slingBelt.id,
     },
     {
       name: "Round Sling 5 Ton - 5 meter",
@@ -112,6 +132,7 @@ async function main() {
       stock: 40,
       images: ["/assets/cover-roundsling5ton.png"],
       isActive: true,
+      categoryId: slingBelt.id,
     },
     {
       name: "Round Sling 8 Ton - 6 meter",
@@ -125,6 +146,7 @@ async function main() {
       stock: 20,
       images: ["/assets/cover-roundsling8ton.png"],
       isActive: true,
+      categoryId: slingBelt.id,
     },
     {
       name: "Round Sling 12 Ton - 8 meter",
@@ -138,106 +160,40 @@ async function main() {
       stock: 10,
       images: ["/assets/cover-roundlsing12ton.png"],
       isActive: true,
+      categoryId: slingBelt.id,
     },
     {
       name: "Shackle 2 Ton",
       slug: "shackle-2t",
       shortDescription: "Steel shackle",
-      description: "Standard shackle",
+      description: "Standard shackle for rigging hardware",
       sku: "SHK-2T12",
       price: 150000,
-      capacityTon: 0,
+      capacityTon: 2,
       lengthM: 0,
       stock: 200,
       images: ["/assets/shackle.png"],
-      isActive: false,
+      isActive: true, // Saya ubah jadi true agar muncul di katalog
+      categoryId: riggingHardware.id, // Lebih cocok masuk Rigging Hardware
     },
   ];
 
   await prisma.product.createMany({ data: products });
-
   console.log("📦 Products seeded.");
 
-  // =========================
-  // 3️⃣ SEED USERS
-  // =========================
-  const users = await Promise.all(
-    Array.from({ length: 10 }).map((_, i) =>
-      prisma.user.create({
-        data: {
-          name: `User ${i + 1}`,
-          email: `user${i + 1}@example.com`,
-          emailVerified: true,
-          role: i === 0 ? "ADMIN" : "USER",
-        },
-      })
-    )
-  );
+  // ==========================================
+  // 4️⃣ SEED USERS
+  // ==========================================
+  await prisma.user.create({
+    data: {
+      name: "Daniel Admin",
+      email: "admin@jagoangkat.com",
+      emailVerified: true,
+      role: "ADMIN",
+    },
+  });
 
-  console.log("👤 Users seeded.");
-
-  // =========================
-  // 4️⃣ SKU LOOKUP MAP
-  // =========================
-  const dbProducts = await prisma.product.findMany();
-  const skuMap = new Map(
-    dbProducts.map((p) => [p.sku, p.id])
-  );
-
-  // =========================
-  // 5️⃣ ORDERS DATA
-  // =========================
-  const ordersData = [
-    { userIdx: 0, status: "DELIVERED", total: 135000, addr: "Jl. Merdeka No.1", items: [{ sku: "WS-1T2M", q: 1, p: 45000 }, { sku: "WS-2T4M", q: 1, p: 90000 }] },
-    { userIdx: 1, status: "PENDING", total: 185000, addr: "Jl. Sudirman No.2", items: [{ sku: "WS-3T6M", q: 1, p: 185000 }] },
-    { userIdx: 2, status: "PROCESSING", total: 420000, addr: "Jl. Gatot No.3", items: [{ sku: "WS-5T8M", q: 1, p: 420000 }] },
-    { userIdx: 3, status: "SHIPPED", total: 950000, addr: "Jl. Thamrin No.4", items: [{ sku: "WS-10T10M", q: 1, p: 950000 }] },
-    { userIdx: 4, status: "CANCELLED", total: 110000, addr: "Jl. Asia No.5", items: [{ sku: "RS-2T3M", q: 1, p: 110000 }] },
-    { userIdx: 5, status: "DELIVERED", total: 380000, addr: "Jl. Diponegoro No.6", items: [{ sku: "RS-5T5M", q: 1, p: 380000 }] },
-    { userIdx: 6, status: "PROCESSING", total: 650000, addr: "Jl. Veteran No.7", items: [{ sku: "RS-8T6M", q: 1, p: 650000 }] },
-    { userIdx: 7, status: "PENDING", total: 1250000, addr: "Jl. Pemuda No.8", items: [{ sku: "RS-12T8M", q: 1, p: 1250000 }] },
-    { userIdx: 8, status: "SHIPPED", total: 150000, addr: "Jl. Cempaka No.9", items: [{ sku: "SHK-2T12", q: 1, p: 150000 }] },
-    { userIdx: 9, status: "CANCELLED", total: 135000, addr: "Jl. Anggrek No.10", items: [{ sku: "WS-1T2M", q: 3, p: 45000 }] },
-  ];
-
-  // =========================
-  // 6️⃣ CREATE ORDERS + PAYMENTS
-  // =========================
-  for (const data of ordersData) {
-    const order = await prisma.order.create({
-      data: {
-        status: data.status as "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED",
-        totalAmount: data.total,
-        shippingAddress: data.addr,
-        userId: users[data.userIdx].id,
-        orderItems: {
-          create: data.items.map((item) => ({
-            productId: skuMap.get(item.sku)!,
-            quantity: item.q,
-            price: item.p,
-          })),
-        },
-      },
-    });
-
-    await prisma.payment.create({
-      data: {
-        amount: data.total,
-        status:
-          data.status === "DELIVERED"
-            ? "COMPLETED"
-            : data.status === "CANCELLED"
-            ? "FAILED"
-            : "PENDING",
-        paymentMethod: "BANK_TRANSFER",
-        transactionId: `TRX-${Date.now()}-${Math.random()}`,
-        userId: users[data.userIdx].id,
-        orderId: order.id,
-      },
-    });
-  }
-
-  console.log("🛒 Orders & Payments seeded.");
+  console.log("👤 Admin user seeded.");
   console.log("✅ Database seeded successfully.");
 }
 

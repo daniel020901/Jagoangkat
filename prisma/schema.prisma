@@ -17,7 +17,6 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
-  carts         Cart[]
   orders        Order[]
   payments      Payment[]
   sessions      Session[]
@@ -69,6 +68,14 @@ model Verification {
   @@map("verification")
 }
 
+model Category {
+  id      Int @id @default(autoincrement())
+  name    String @unique
+  slug    String?  @unique
+  product Product[]
+  @@map("categories")
+}
+
 model Product {
   id               String      @id @default(cuid())
   name             String
@@ -76,7 +83,7 @@ model Product {
   shortDescription String?
   description      String?
   sku              String      @unique
-  price            Int
+  price            Decimal      @db.Decimal(20, 2)
   capacityTon      Int?
   lengthM          Int?
   stock            Int         @default(0)
@@ -84,12 +91,12 @@ model Product {
   isActive         Boolean     @default(true)
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
-  cartItems        CartItem[]
   orderItems       OrderItem[]
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int
 
-  @@index([slug])
-  @@index([sku])
-  @@index([isActive])
+  @@index([categoryId])
+  @@index([isActive, createdAt])
   @@map("products")
 }
 
@@ -102,28 +109,13 @@ model OrderItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@index([orderId])
   @@index([productId])
   @@map("order_items")
 }
 
-model CartItem {
-  id        String   @id @default(uuid())
-  quantity  Int      @default(1)
-  productId String
-  cartId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([cartId, productId])
-  @@index([cartId])
-  @@index([productId])
-  @@map("carts_items")
-}
 
 model Order {
   id              String      @id @default(uuid())
@@ -140,20 +132,10 @@ model Order {
 
   @@index([userId])
   @@index([orderNumber])
+  @@index([status])
   @@map("orders")
 }
 
-model Cart {
-  id        String     @id @default(uuid())
-  userId    String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cartItems CartItem[]
-
-  @@index([userId])
-  @@map("carts")
-}
 
 model Payment {
   id            String        @id @default(uuid())

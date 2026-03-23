@@ -1,6 +1,7 @@
 import { getServerSession } from "@/lib/get-session";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { createOrderService } from "@/lib/services/order-service"
 
 export async function GET(){
     try{
@@ -53,5 +54,48 @@ export async function GET(){
             {message: "Failed to fetch orders"},
             {status: 500}
         )
+    }
+}
+
+export async function POST (req:Request){
+    try{
+        const session = await getServerSession();
+
+        if(!session?.user){
+            return NextResponse.json(
+                {message: "Silahkan Login terlebih Dahulu"},
+                {status: 401},
+            )
+        }
+        const body = await req.json()
+        const { items, shippingAddress, paymentMethod} = body;
+
+        if(!items || items.length === 0) {
+            return NextResponse.json(
+                {message: "Keranjang Kosong"},
+                {status: 400},
+            )
+        }
+
+        const newOrder = await createOrderService(
+            session.user.id,
+            items,
+            shippingAddress,
+            paymentMethod
+        );
+
+        return NextResponse.json(newOrder, {status: 201})
+    } catch (error){
+         const message = error instanceof Error ? error.message : "Gagal membuat pesanan"
+         console.error ("[API_POST_ORDERS] Error :", error)
+
+        const isStockError = message.includes("tidak mencukupi")
+        const isNotFound = message.includes("tidak ditemukan")
+
+         return NextResponse.json(
+            {message},
+            { status: isStockError ? 409 : isNotFound ? 404 : 500},
+         )
+        
     }
 }

@@ -1,5 +1,5 @@
 import ProductInteraction from "@/components/ProductInteraction";
-import { getProductBySlug } from "@/lib/product-service";
+import { getProductBySlug } from "@/lib/product-server";
 import { ProductType } from "@/types"
 import Image from "next/image"
 import { notFound } from "next/navigation";
@@ -29,8 +29,8 @@ const ProductPage = async({params}:{params:Promise<{slug:string}>;}) => {
   }
     //logika gambar dalam benntuk record <string, string>
     
-   const images = JSON.parse(product.images || ' []')
-  const firstImage = images[0] || "/placeholder.jpg";
+   const images = Array.isArray(product.images) ? product.images : JSON.parse(product.images || '[]');
+  const firstImage = product.images[0] || "/placeholder.jpg";
 
 
     return (
@@ -49,6 +49,18 @@ const ProductPage = async({params}:{params:Promise<{slug:string}>;}) => {
           </div>
           {/* Details  */}
           <div className="w-full lg:w-7/12 flex flex-col gap-4">
+          <div>
+    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase
+      /* Light Mode */
+      bg-blue-100 text-blue-700 border border-blue-200
+      /* Dark Mode */
+      dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800
+      transition-all duration-300 hover:scale-105
+      ">
+      <span className="w-2 h-2 rounded-full bg-blue-500 mr-2 animate-pulse"></span>
+      {product.categoryName}
+    </span>
+  </div>
           <h1 className="text-2xl font-medium">{product.name}</h1>
           <p className="text-gray-600">{product.description}</p>
           <h2 className="text-2xl font-semibold">Rp .{" "}{product.price.toLocaleString("id-ID")}</h2>

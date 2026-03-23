@@ -38,6 +38,11 @@ export type Account = Prisma.AccountModel
  */
 export type Verification = Prisma.VerificationModel
 /**
+ * Model Category
+ * 
+ */
+export type Category = Prisma.CategoryModel
+/**
  * Model Product
  * 
  */
@@ -48,20 +53,10 @@ export type Product = Prisma.ProductModel
  */
 export type OrderItem = Prisma.OrderItemModel
 /**
- * Model CartItem
- * 
- */
-export type CartItem = Prisma.CartItemModel
-/**
  * Model Order
  * 
  */
 export type Order = Prisma.OrderModel
-/**
- * Model Cart
- * 
- */
-export type Cart = Prisma.CartModel
 /**
  * Model Payment
  * 

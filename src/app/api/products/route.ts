@@ -5,22 +5,19 @@ import { productSchema } from "@/types";
 import prisma from "@/lib/prisma";
 
 export async function GET (request: NextRequest) {
-  const isAdminParam = request.nextUrl.searchParams.get("isAdmin")?.toLowerCase() ===  "true"
-
+  
   try {
-    let isAdmin = false;
+    const session = await getServerSession()
 
-    //proteksi jika request meminta data admin
-    if(isAdminParam ) {
-      const session = await getServerSession()
-      if(session?.user?.role === "ADMIN") {
-        isAdmin = true
-      } else {
-        return NextResponse.json ({ message: " Forbidden"}, { status: 403})
-      }
-    }
+    const isAdmin = session?.user?.role === "ADMIN"
 
-    const products = await getProductsData(isAdmin)
+    //ambil query params dari URL
+    const {searchParams} = new URL (request.url)
+    const page = parseInt(searchParams.get("page") || "1")
+    const pageSize = parseInt(searchParams.get("pageSize") || "20");
+    const sort = searchParams.get("sort") || "newest"
+
+    const products = await getProductsData(isAdmin, page, pageSize, sort)
     return NextResponse.json(products, {
       status:200,
       headers: {
@@ -47,7 +44,7 @@ export async function POST(request: NextRequest) {
     if(!validation.success) {
       return NextResponse.json({ message: validation.error.issues[0]?.message}, {status: 400})
     }
-    const {sku, name, ...data} = validation.data
+    const {sku, name, categoryId, ...data} = validation.data
     const cleanSku = sku.toUpperCase().trim()
     
     const existingSku = await prisma.product.findUnique({
@@ -63,7 +60,10 @@ export async function POST(request: NextRequest) {
         name,
         sku: cleanSku,
         slug,
-        ...data
+        ...data,
+        category: {
+          connect: { id: categoryId } 
+        }
       },
     })
     return NextResponse.json({ product: newProduct}, {status:201})

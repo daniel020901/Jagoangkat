@@ -25,7 +25,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   return (
     <div 
       onClick={handleCardClick}
-      className="group bg-white dark:bg-zinc-900 rounded-xl overflow-hidden border border-gray-300 dark:border-zinc-500 hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
+      className="group bg-white dark:bg-zinc-900 rounded-xl overflow-hidden border border-gray-300 dark:border-zinc-500 hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col h-full"
     >
       {/* Image Container - Menggunakan aspect-square agar tidak ada gap atas-bawah yang jauh */}
       <div className="relative aspect-square overflow-hidden bg-gray-50 dark:bg-zinc-800">
@@ -46,7 +46,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
           {product.sku}
         </span>
         
-        <h2 className="font-semibold text-base leading-tight mb-1 line-clamp-1 group-hover:text-orange-600 transition-colors">
+        <h2 className="font-semibold text-base leading-tight mb-1 line-clamp-2 group-hover:text-orange-600 transition-colors">
           {product.name}
         </h2>
         

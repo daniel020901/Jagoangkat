@@ -1,7 +1,7 @@
 import z from "zod";
 
 export type ProductType = {
-    id: string | number;
+    id: string ;
     name : string;
     slug:string;
     shortDescription: string;
@@ -13,6 +13,8 @@ export type ProductType = {
     stock : number;
     images: string[]
     isActive : boolean;
+    categoryName?: string;
+
 
 
 }
@@ -27,6 +29,7 @@ export const productSchema = z.object({
     shortDescription: z.string().max(200, " Deskripsi singkat maksimal 200 karakter").optional(),
     description: z.string().optional(),
     images: z.array(z.string()).min(0, "Minimal unggah 1 foto produk").optional(),
+    categoryId: z.number().int("Kategori wajib dipilih"),
     isActive: z.boolean(),
 
 })
