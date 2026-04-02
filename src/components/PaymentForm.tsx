@@ -2,10 +2,11 @@
 
 import { shippingFormInputs } from "@/types";
 import { ShoppingCart, CreditCard, Building2, Wallet, Package } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import useCartStore from "@/stores/cartStore";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 type PaymentMethod = "CREDIT_CARD" | "BANK_TRANSFER" | "E_WALLET" | "COD";
 
@@ -26,6 +27,7 @@ const EWALLET_OPTIONS = ["GoPay", "OVO", "Dana", "ShopeePay"];
 
 const PaymentForm = ({ shippingForm }: PaymentFormProps) => {
   const router = useRouter();
+  const pathname = usePathname();
   const { cart, clearCart } = useCartStore();
 
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
@@ -51,6 +53,8 @@ const PaymentForm = ({ shippingForm }: PaymentFormProps) => {
   };
 
   const handleCheckout = async () => {
+
+    
     const paymentMethod = getPaymentMethodValue();
     if (!paymentMethod) return;
 

@@ -37,7 +37,7 @@ const OrderDetailPage = async ({ params }: Props) => {
 );
 const shippingFee = Number(order.totalAmount) - subtotal;
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-24 font-sans">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-24 font-sans">
       <div className="flex flex-col gap-6">
 
         {/* Success Banner */}

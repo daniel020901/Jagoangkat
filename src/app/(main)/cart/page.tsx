@@ -2,12 +2,13 @@
 
 import { shippingFormInputs } from "@/types";
 import { ArrowRight, Trash2, ShoppingBag } from "lucide-react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useState, useMemo } from "react";
 import ShippingForm from "@/components/ShippingForm";
 import PaymentForm from "@/components/PaymentForm";
 import Image from "next/image";
 import useCartStore from "@/stores/cartStore";
+import { authClient } from "@/lib/auth-client";
 
 const steps = [
   { id: 1, title: "Shopping Cart" },
@@ -18,7 +19,10 @@ const steps = [
 const CartPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
   const [shippingForm, setShippingForm] = useState<shippingFormInputs | null>(null);
+  
+  const { data: session, isPending } = authClient.useSession();
 
   const activeStep = parseInt(searchParams.get("step") || "1");
   const { cart, removeFromCart, getSummary, hashHydrated } = useCartStore();
@@ -26,6 +30,15 @@ const CartPage = () => {
   // Menghitung ringkasan biaya secara efisien
   // Destructuring hasil perhitungan dari store
     const { subtotal, shipping, total } = getSummary();
+    const handleProceedToShipping = () => {
+    if (!session) {
+    const redirectTarget = `${pathname}?step=2`; 
+    const signInUrl = `/sign-in?redirect=${encodeURIComponent(redirectTarget)}`;
+    router.push(signInUrl);
+    return;
+  }
+  router.push("/cart?step=2", { scroll: true });
+};
 
     // Render aman untuk hidrasi Next.js
     if (!hashHydrated) return null;
@@ -121,7 +134,7 @@ const CartPage = () => {
                       <p className="text-zinc-900 dark:text-zinc-100 font-bold">Keranjang kosong</p>
                       <p className="text-sm text-gray-500">Belum ada alat angkat berat yang ditambahkan.</p>
                     </div>
-                    <button onClick={() => router.push("/")} className="text-sm font-bold text-orange-600 hover:underline">Mulai belanja</button>
+                    <button onClick={() => router.push("/products")} className="text-sm font-bold text-orange-600 hover:underline">Mulai belanja</button>
                   </div>
                 )
               ) : activeStep === 2 ? (
@@ -163,7 +176,7 @@ const CartPage = () => {
 
               {activeStep === 1 && cart.length > 0 && (
                 <button
-                  onClick={() => router.push("/cart?step=2", { scroll: true })}
+                  onClick={handleProceedToShipping}
                   className="w-full mt-8 bg-zinc-900 dark:bg-white text-white dark:text-black py-4 rounded-xl font-bold hover:bg-orange-600 dark:hover:bg-orange-500 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
                 >
                   Lanjut ke Pengiriman

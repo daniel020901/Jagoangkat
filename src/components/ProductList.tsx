@@ -5,7 +5,7 @@ import { ProductsType, ProductType } from "@/types";
 import ProductCard from "./ProductCard";
 import Link from "next/link";
 import Filter from "./Filter";
-import { getProductsData } from "@/lib/product-server";
+import { getProductsData , getCategoriesData} from "@/lib/product-server";
 import { PaginationWithLinks } from "./ui/pagination-with-links";
 import Categories from "./Categories";
 
@@ -13,10 +13,12 @@ import Categories from "./Categories";
 
 interface ProductListProps {
  category: string; 
-  params: "homepage" | "products"; 
+  params: "homepage" | "products";
   page?:number;
   pageSize?: number;
   sort?: string;
+  minPrice ?: string;
+  maxPrice ?: string;
   
 }
 const ProductList = async ({ 
@@ -24,14 +26,25 @@ const ProductList = async ({
   params,
   page =1 , 
   pageSize = 12,
-  sort = "newest"
+  sort = "newest",
+  minPrice,
+  maxPrice
  
 }: ProductListProps) => {
-  
-  const {products, totalCount} = await getProductsData(false, page, pageSize, sort);
-
+  const allCategories = await getCategoriesData();
+  const selectedCategory = allCategories.find(c => c.slug === category);
+  const { products, totalCount } = await getProductsData(
+    false,              // isAdmin
+    page, 
+    pageSize, 
+    sort, 
+    selectedCategory?.id, 
+    undefined,          
+    minPrice ? parseInt(minPrice) : undefined,
+    maxPrice ? parseInt(maxPrice) : undefined
+  );
   return (
-  <div className="w-full max-w-6xl mx-auto px-3 py-10">
+  <div className="w-full max-w-4xl mx-auto px-3 py-10">
   {/* Header Section: Filter & Categories */}
   <div className="flex items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800">
     
@@ -46,7 +59,7 @@ const ProductList = async ({
       
       <div className="flex-1  no-scrollbar flex items-center">
         <div className="flex flex-nowrap items-center h-full">
-           <Categories />
+           <Categories categories={allCategories}/>
         </div>
       </div>
     </div>
@@ -57,7 +70,7 @@ const ProductList = async ({
   </div>
 
   {/* Product Grid */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-8 gap-y-12">
+  <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-8 gap-y-12">
     {products.length > 0 ? (
       products.map((product: ProductType) => (
         <ProductCard key={product.id} product={product} />

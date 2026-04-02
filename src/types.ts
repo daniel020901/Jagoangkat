@@ -1,5 +1,7 @@
 import z from "zod";
 
+
+
 export type ProductType = {
     id: string ;
     name : string;
@@ -79,9 +81,9 @@ export type CartStoreActionsType = {
 }
 
 export const OrderSchema = z.object({
-    id: z.union([z.string(), z.number()]),
+    id: z.string(),
     orderNumber: z.string(),
-    status: z.enum(["PENDING", "SHIPPED", "DELIVERED", "CANCELLED"]),
+    status: z.enum(["PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"]),
     totalAmount: z.string(),
     shippingAddress: z.string(),
     createdAt: z.string(),
@@ -103,3 +105,21 @@ export const OrderSchema = z.object({
 
 export type Order = z.infer<typeof OrderSchema>
 
+export const ORDER_STATUS = {
+  PENDING:    "PENDING",
+  PROCESSING: "PROCESSING",
+  SHIPPED:    "SHIPPED",
+  DELIVERED:  "DELIVERED",
+  CANCELLED:  "CANCELLED",
+} as const;
+
+export type OrderStatus = keyof typeof ORDER_STATUS;
+
+export const PAYMENT_STATUS = {
+  PENDING:   "PENDING",
+  COMPLETED: "COMPLETED",
+  FAILED:    "FAILED",
+  REFUNDED:  "REFUNDED",
+} as const;
+
+export type PaymentStatus = keyof typeof PAYMENT_STATUS;

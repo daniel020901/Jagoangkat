@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOutIcon, ShieldIcon, UserIcon } from "lucide-react";
+import { Clock, LogOutIcon, ShieldIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -79,9 +79,18 @@ export function UserDropdown({ user }: UserDropdownProps) {
             <span className="font-medium">Profile</span>
           </Link>
         </DropdownMenuItem>
+
         )}
+
+        
         
         {user.role === "ADMIN" && <AdminItem />}
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/orders" className="flex items-center gap-3 px-2 py-2 rounded-md">
+            <Clock className="w-4 h-4 text-muted-foreground" />
+            <span className="font-medium">Riwayat Pesanan</span>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator className="my-2" />
         <SignOutItem />
       </DropdownMenuContent>

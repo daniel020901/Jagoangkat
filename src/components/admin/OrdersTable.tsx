@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import {Search} from "lucide-react"
 import { Order } from "@/types"
+import Link from "next/link";
 
 
 export default function OrdersTable(){
@@ -107,8 +108,13 @@ export default function OrdersTable(){
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 max-w-xs truncate">{order.shippingAddress || "-"}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{order.payment?.paymentMethod || "N/A"}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <button className="text-blue-400 hover:text-blue-300 transition-colors">
-                                            View Detail </button> </td>
+                                         <Link 
+                                         href={`/admin/orders/${order.id}`}
+                                        className="text-blue-400 hover:text-blue-300 transition-colors"
+                                        >
+                                    View Detail
+                                    </Link>
+                                    </td>
                                     </motion.tr>
                                 )
                             })}

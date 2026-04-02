@@ -1,9 +1,19 @@
 
 import type { ProductFormInputs, ProductType} from "@/types";
 
-interface ProductsResponse {
-  products: ProductType[];
+interface PaginationInfo {
   totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+interface ProductsResponse {
+  data: ProductType[];
+  totalCount: number;
+  pagination: PaginationInfo;
 }
 const API_BASE_URL = "/api/products"
 

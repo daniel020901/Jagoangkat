@@ -1,14 +1,34 @@
 import prisma from "./prisma";
 import { ProductType } from "@/types";
 import { Prisma } from "./generated/prisma/client";
+import { unstable_cache } from "next/cache";
 
-export async function getProductsData(
+export async function getCategoriesData() {
+  try {
+    return await prisma.category.findMany({
+      orderBy: {name: 'asc'},
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+      }
+    });
+
+  }catch (error) {
+    console.error("Gagal mengambil kategori", error)
+    return []
+  }
+}
+
+export async function _getProductsData(
   isAdmin: boolean = false,
   page : number = 1,
   pageSize: number = 20,
   sort : string = "newest",
   categoryId ?: number,
   search ?:string,
+  minPrice ?: number,
+  maxPrice ?: number,
 
 )
 {
@@ -29,6 +49,11 @@ export async function getProductsData(
       ...(isAdmin ? {} : { isActive: true }),
       ...(categoryId ?   { categoryId: categoryId } : {} ),
       ...(search ? { name:{ contains: search, mode:'insensitive' as const}} : {} ),
+
+      price: {
+        gte: minPrice ?? 0,
+        lte: maxPrice ?? 9999999999999,
+      }
       
       
     };
@@ -38,7 +63,9 @@ export async function getProductsData(
         where: whereClause,
         skip: skip,
         take: pageSize,
-        orderBy: orderBy,
+        orderBy: [  {stock: 'desc'}, 
+          orderBy, 
+        ],
         select: {
           id: true,
           name: true,
@@ -56,10 +83,13 @@ export async function getProductsData(
         select: {
           name: true,
           id: true,
+          slug:true,
             },
           }
         },
+        
       }),
+      
    
       prisma.product.count({ where: whereClause }),
     ]);
@@ -86,9 +116,20 @@ export async function getProductsData(
     return { products: [], totalCount: 0 };
   }
 }
-export async function getProductBySlug(slug: string, isAdmin: boolean = false): Promise<ProductType | null> {
+export const getProductsData = unstable_cache(
+  _getProductsData,
+  ["products-list"],
+  {
+    revalidate: 60,
+    tags: ["products"],
+  }
+);
+export const getProductsDataAdmin = _getProductsData;
+
+//getProductBySlug - id_
+export async function _getProductBySlug(slug: string, isAdmin: boolean = false): Promise<ProductType | null> {
   try {
-    const product = await prisma.product.findFirst({ // Gunakan findFirst agar bisa gabung slug & isActive
+    const product = await prisma.product.findFirst({
       where: {
         slug: slug,
         ...(isAdmin ? {} : { isActive: true }) // Admin bisa lihat meski inactive
@@ -133,4 +174,15 @@ export async function getProductBySlug(slug: string, isAdmin: boolean = false): 
     console.error("Error fetching product by slug:", error);
     throw new Error("Failed to fetch product by slug");
   }
+}
+
+export async function getProductBySlug(slug:string, isAdmin: boolean = false) {
+  return unstable_cache(
+    () => _getProductBySlug(slug, isAdmin),
+    ["product_by_slug", slug],
+    {
+      revalidate:60,
+      tags: ["products", `product_${slug}`],
+    }
+  )()
 }

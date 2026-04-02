@@ -29,13 +29,13 @@ export default function LogoMarquee() {
                     {Logos.map((logo, index) => (
                         <div 
                             key={index} 
-                            className="mx-10 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
+                            className=" relative mx-10 w-[360px] h-[180px] flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
                         >
                             <Image 
                                 src={logo.src} 
-                                alt={logo.alt} 
-                                width={180} 
-                                height={60} 
+                                alt={logo.alt}
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
                                 className="object-contain"
                                 // Mempercepat loading untuk LCP
                                 priority={index < 3} 

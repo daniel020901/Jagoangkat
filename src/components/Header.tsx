@@ -16,38 +16,39 @@ export default async function Header() {
     <header className="sticky top-0 z-20 w-full border-b bg-background backdrop-blur supports-backdrop-filter:bg-background">
       <div className="w-full px-4 sm:px-8">
         <div className="flex h-16 items-center justify-between space-x-4 md:space-x-8 lg:space-x-12">
-          <Link href="/" className="relative h-10 w-32 md:w-40">
+          <Link href="/" className="relative h-20 w-32 md:w-40">
             <Image
               src="/jagoangkat.png"
               alt="Jago Angkat Logo"
               fill
+              sizes="(max-width: 768px) 120vw, (max-width: 1200px) 80vw, 33vw"
             className="border-muted object-contain "
-              
+            priority              
             />
           </Link>
 
-          <nav className="hidden md:flex items-center justify-center space-x-1">
+          <nav className="hidden md:flex items-center justify-center space-x-1 gap-4">
             <Link
               href="/"
-              className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-red-700 transition-colors"
+              className="px-4 py-2 text-md font-medium text-muted-foreground hover:text-red-700 transition-colors"
             >
               Home
             </Link>
             <Link
               href="/products"
-              className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-red-700 transition-colors"
+              className="px-4 py-2 text-md font-medium text-muted-foreground hover:text-red-700 transition-colors"
             >
               Products
             </Link>
             <Link
               href="/about"
-              className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-red-700 transition-colors"
+              className="px-4 py-2 text-md font-medium text-muted-foreground hover:text-red-700 transition-colors"
             >
               About
             </Link>
             <Link
               href="/contact"
-              className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-red-700 transition-colors"
+              className="px-4 py-2 text-md font-medium text-muted-foreground hover:text-red-700 transition-colors"
             >
               Contact
             </Link>
@@ -57,7 +58,7 @@ export default async function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="relative"
+              className="relative "
               aria-label="Shopping Cart"
             >
               <ShoppingCartIcon  />

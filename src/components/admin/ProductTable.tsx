@@ -52,8 +52,12 @@ export default function ProductTable() {
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true)
-      const data = await getProduct(true, 1, 50)
-      setProductData(data)
+      const response = await getProduct(true, 1, 50)
+      console.log("Raw Data from API:", response )
+      setProductData({
+      products: response.data || [], 
+      totalCount: response.pagination?.totalCount || 0
+    });
     } catch (error) {
       console.error("Error fetching products", error)
     } finally {

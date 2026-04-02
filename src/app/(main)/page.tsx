@@ -6,14 +6,19 @@ import Hero from "@/components/hero";
 import LogoMarquee from "@/components/LogoMarquee";
 
 export default function Home() {
-
   return (
-    <div>
-      <Hero/>
+    // Gunakan min-h-screen agar background konsisten
+    // overflow-x-hidden untuk mencegah scroll ke samping yang bikin layout berantakan
+    <main className="min-h-screen w-full overflow-x-hidden bg-background">
+      
+        <Hero />
+      
       <LogoMarquee />
-      <HeroSection />
-      <ChooseUs />
-      <Testimonial />
-    </div>
+
+        <HeroSection />
+        <ChooseUs />
+        <Testimonial />
+      
+    </main>
   );
 };

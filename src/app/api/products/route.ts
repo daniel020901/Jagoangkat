@@ -1,6 +1,8 @@
 import { getServerSession } from "@/lib/get-session";
 import { NextResponse, NextRequest } from "next/server";
-import { getProductsData } from "@/lib/product-server";
+import { getProductsData, _getProductsData } from "@/lib/product-server";
+import { revalidateTag } from "next/cache";
+import { randomBytes } from "crypto";
 import { productSchema } from "@/types";
 import prisma from "@/lib/prisma";
 
@@ -16,16 +18,34 @@ export async function GET (request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1")
     const pageSize = parseInt(searchParams.get("pageSize") || "20");
     const sort = searchParams.get("sort") || "newest"
+    const categoryId = searchParams.get("categoryId") ? parseInt(searchParams.get("categoryId")!) : undefined;
+    const search = searchParams.get("search") || undefined;
 
-    const products = await getProductsData(isAdmin, page, pageSize, sort)
-    return NextResponse.json(products, {
-      status:200,
+    const {products, totalCount } = isAdmin
+    ? await _getProductsData(true, page, pageSize, sort, categoryId, search)
+      : await getProductsData(false, page, pageSize, sort, categoryId, search);
+
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    return NextResponse.json( {
+
+      data : products,
+      pagination: {
+        totalCount,
+        totalPages,
+        currentPage: page,
+        pageSize,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      }
+    }, {
+      status: 200,
       headers: {
         "Cache-Control": isAdmin
-        ? "no-store , max-age=0"
-        : "public, s-maxage=60, stale-while-revalidate=30",
+          ? "no-store, max-age=0"
+          : "public, s-maxage=60, stale-while-revalidate=30",
       },
-    })
+    });
   } catch (error){
     return NextResponse.json({ message: "Internal Server Error"}, { status:500})
   }
@@ -54,7 +74,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({message: "SKU  sudah terdaftar!"}, {status: 400})
     }
 
-    const slug = name.toLowerCase().replace(/[^a-z0-9]/g, "-") + "-" + Date.now()
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+           + "-" + randomBytes(4).toString("hex");
     const newProduct = await prisma.product.create({
       data: {
         name,
@@ -66,6 +87,7 @@ export async function POST(request: NextRequest) {
         }
       },
     })
+
     return NextResponse.json({ product: newProduct}, {status:201})
   }catch(error){
     return NextResponse.json({message: "Error Saving Product"}, { status: 500})

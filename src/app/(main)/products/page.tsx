@@ -5,6 +5,9 @@ type SearchParams = Promise<{
     pageSize?: string; 
     category?: string; // Buat opsional (?) jika tidak selalu ada di URL
     sort?: string;     // Tambahkan sort di sini agar tidak error
+    minPrice ?: string;
+    maxPrice ?: string;
+
 }>
 
 const ProductsPage = async ({
@@ -16,8 +19,10 @@ const ProductsPage = async ({
 
     const page = Number(sParams.page)||1;
     const pageSize = Number(sParams.pageSize) || 20;
-    const category = sParams.category || "all";
+    const category = sParams.category || "undifined";
     const sort = sParams.sort || "newest";
+    const minPrice = sParams.minPrice; 
+    const maxPrice = sParams.maxPrice;
     return (
         <div className="">
         <ProductList 
@@ -27,6 +32,8 @@ const ProductsPage = async ({
         page={page}
         pageSize={pageSize}
         sort= {sort}
+        minPrice ={minPrice}
+        maxPrice = {maxPrice}
         />
         </div>
 
